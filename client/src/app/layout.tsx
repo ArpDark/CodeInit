@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
+// import "./prism-vsc-dark-plus.css";
 
 import { cn } from "@/lib/utils";
 // const inter = Inter({ subsets: ["latin"] });

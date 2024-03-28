@@ -1,120 +1,93 @@
 "use client";
-import { useEffect,useState,useRef } from "react";
+import dotenv from "dotenv";
+import { useEffect,useState,useRef,createContext } from "react";
 import Dropdown from "@/components/Dropdown";
+import CodeArea from "@/components/CodeArea";
+import InputArea from "@/components/InputArea";
+import { SourceCodeContext,StdinContext,CodeLangContext } from "@/components/MyContext";
 import axios from "axios";
-// import qs from "qs";
+import Prism from "prismjs";
+import "./prism-vsc-dark-plus.css";
+import qs from "qs";
+dotenv.config();
 
 export default function Home() {
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const linenumRef = useRef<HTMLDivElement>(null);
-  const [username, setUsername] = useState("");
+
+  // const [username, setUsername] = useState(``);
   const [codeLanguage, setCodeLanguage] = useState("C++");
-  const [stdin, setStdin] = useState("");
-  const [sourceCode, setSourceCode] = useState("");
-  const [lineNumber, setLineNumber]=useState([1]);
-  const [lineCounter, setLineCounter]=useState(1);
-  const apiUrl=process.env.BACKEND_URL;
+  const [sourceCode, setSourceCode] = useState(``);
+  const [stdin, setStdin] = useState(``);
+  const [output, setOutput] = useState(``);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if( textareaRef.current!=null && linenumRef.current)
-        linenumRef.current.scrollTop = textareaRef.current.scrollTop;
-    };
+  const apiUrl=process.env.NEXT_PUBLIC_SERVER;
+  
+  // const apiUrl="http://localhost:8000";
 
-    // textareaRef.current?.addEventListener('scroll', handleScroll);
-    textareaRef.current?.addEventListener('scroll', handleScroll);
-    // return () => {
-    //     textareaRef.current?.removeEventListener('scroll', handleScroll);
-    // };
-  }, []);
+
 
   const handleSubmit=(e:any)=>{
     e.preventDefault();
+    console.log(sourceCode);
+    
     const data={
-      user:username,
       lang:codeLanguage,
       stdin:stdin,
       code:sourceCode,
-      date:new Date()
     }
+    console.log(data);
+    // console.log(apiUrl);
 
-  }
-
-  const handleChange=(e:any)=>{
-    setSourceCode(e.target.value);
-    const str=e.target.value;
-    let index = str.indexOf("\n");
-    let c=0;
-    while (index !== -1) {
-      c++;
-      index = str.indexOf("\n", index + 1);
-    }
-    console.log(c);
+    const config = {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: qs.stringify(data),
+      // url: "http://localhost:8000/submit"
+      url: apiUrl+"/submit"
+    };
+    axios(config)
+    .then((result)=>{
+      console.log(result);
+      setOutput(result.data);
+    })
+    .catch((err)=>{
+      console.log(err);
+    });
     
-    let arr: any[0]=[1];
-    let a;
-    for(a=1;a<=c;a++)
-    {
-      arr[a]=a+1;
-    }
-    setLineNumber(arr);
-    setLineCounter(c);
+
   }
 
-  const newLine=(e:any)=>{
-    // console.log(sourceCode.at(sourceCode.length-1));
-    // if(e.code==="Enter")
-    // {
-    //   setLineNumber([...lineNumber,lineCounter+1]);
-    //   setLineCounter(lineCounter+1);
-    // }
-    if(e.code=="Tab")
-    {
-      e.preventDefault();
-      console.log("Space 4 time");
-      setSourceCode(sourceCode+"    ");
-    }
-    if(e.code == "Backspace")
-    {
-      if(sourceCode.at(sourceCode.length-1)=="\n")
-      {
-        setLineCounter(lineCounter-1);
-        setLineNumber(lineNumber.slice(0,-1));
-      }
-      
-    }
-  }
+  
 
   return (
     <div className='flex flex-col items-center max-w-screen bg-gradient-to-bl from-slate-500 via-white to-slate-300 overflow-y-auto border border-green-400  font-semibold'>
       <div className="font-mono text-3xl mt-4">
         C0deIn1t
       </div>
-      <form className='flex flex-col w-full items-center border border-red-500 ' onSubmit={handleSubmit}>
-        <Dropdown/>
+      <form className='flex flex-col w-full items-center border border-red-500 my-4 ' onSubmit={handleSubmit}>
+        <div className="flex justify-around items-end  w-full">
+          <CodeLangContext.Provider value={{codeLanguage,setCodeLanguage}}>
+            <Dropdown/>
+          </CodeLangContext.Provider>
+          <button className=' w-fit h-fit shadow-md shadow-slate-400 hover:shadow-none bg-slate-700 px-4 py-2 hover:px-[0.95rem] hover:py-[0.45rem] text-white rounded-md  ' type="submit">Run</button>
+          <div className="border-2 border-green-400 w-fit h-fit px-20 py-4"></div>
+        </div>
         <div className=" flex flex-col lg:flex-row w-full lg:justify-around items-center ">
-          <div className='flex flex-col w-7/12 mt-4'>
-            <label htmlFor='code'>Source Code:</label>
-
-            <div className="flex  rounded-sm p-5  h-96 text-white bg-slate-700 shadow-md shadow-gray-400">
-
-              <div ref={linenumRef} className="border-2 border-red-500 h-64 overflow-y-auto ">
-                {lineNumber.map((line) => (
-                  <p key={"a"+line} >{line}. </p>
-                ))}
-              </div>
-              <textarea ref={textareaRef}  name='code' onKeyDown={newLine} className=' resize-none max-h-max outline-none w-full h-64 border-2 border-yellow-300  bg-transparent ' value={sourceCode} onChange={handleChange} />
-                
-            </div>
-          </div>
-
-          <div className="flex flex-col w-6/12 lg:w-[20%] mt-4">
-            <label htmlFor='input'>Standard Input (stdin):</label>
-            <textarea value={stdin} className='outline-none overflow-x-auto resize-none h-72 text-white bg-slate-700 rounded-sm shadow-md shadow-gray-400 p-4' wrap="off" name='input' onChange={(e) => setStdin(e.target.value)} />
+          
+          <SourceCodeContext.Provider value={{sourceCode, setSourceCode}}>
+            <CodeArea/>
+          </SourceCodeContext.Provider>
+          
+          <StdinContext.Provider value={{stdin,setStdin}}>
+            <InputArea/>
+          </StdinContext.Provider>
+        </div>
+        <div className="flex flex-col ">
+          <p className="">Result:</p>
+          <div className="">
+            {output}
           </div>
         </div>
-        <button className=' my-8 rounded-md border-2 text-white border-sky-500 text-lg bg-sky-800 w-fit px-5  py-2 ' type="submit">Submit</button>
       </form>
     </div>
   );

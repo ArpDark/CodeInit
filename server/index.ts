@@ -1,21 +1,30 @@
 import express,{Express, Request, Response} from 'express';
 import dotenv from 'dotenv';
-import axios from 'axios';
+import bodyParser from 'body-parser';
+import cors from "cors";
+import axios from "axios";
 dotenv.config();
-
-const app = express();
+// dotenv.config({path: __dirname + '/.env'});
 const port = process.env.PORT||8000;
 
+const app:Express = express();
+app.use(cors());
+// const corsOptions ={
+//     origin:process.env.ORIGIN_URI, 
+//     credentials:true,            
+//     optionSuccessStatus:200
+// }
+// app.use(cors(corsOptions));
+app.use(bodyParser.urlencoded({extended: true}));
+
 app.get('/', (req:Request, res:Response) => {
-  res.send('Express + TypeScript Server');
+  res.send('Server here');
 });
 
-app.post("/submit",async(req,res)=>{
-  console.log(req.body.user);
+app.post("/submit",async(req:Request,res:Response)=>{
   console.log(req.body.lang);
   console.log(req.body.stdin);
   console.log(req.body.code);
-  console.log(req.body.date);
   const buffer = Buffer.from(req.body.code);
   const code = buffer.toString('base64');
 
@@ -26,7 +35,7 @@ app.post("/submit",async(req,res)=>{
   if(req.body.lang=="Java") langId=62;
   if(req.body.lang=="JavaScript") langId=63;
   if(req.body.lang=="Python") langId=71;
-  let x="";
+
   const options = {
       // c++ id:54
       //  java id: 62
@@ -57,8 +66,8 @@ app.post("/submit",async(req,res)=>{
       console.log(response.data);
       const buffer= Buffer.from(response.data.stdout, 'base64');
       console.log(buffer.toString());
-      x=buffer.toString();
-      res.send(x);
+      const output=buffer.toString();
+      res.send(output);
   } catch (error) {
       console.error(error);
   }

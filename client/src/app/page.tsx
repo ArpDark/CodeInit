@@ -59,7 +59,7 @@ export default function Home() {
     });
   }
 
-  const useBr=(text:string)=>{
+  const setNewline=(text:string)=>{
     console.log(typeof(text));
     return text.replace(/\n/g, "<br>");
   }
@@ -96,7 +96,7 @@ export default function Home() {
           <CircularProgress size={"2rem"}/>
         ):(
 
-            <div className="w-full h-full text-white bg-slate-700" dangerouslySetInnerHTML={{__html: useBr(output)}} />
+            <div className="w-full h-full text-white bg-slate-700" dangerouslySetInnerHTML={{__html: setNewline(output)}} />
             )
           } 
         </div>

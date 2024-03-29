@@ -6,8 +6,10 @@ import CodeArea from "@/components/CodeArea";
 import InputArea from "@/components/InputArea";
 import { SourceCodeContext,StdinContext,CodeLangContext } from "@/components/MyContext";
 import axios from "axios";
+import DOMPurify from 'dompurify';
 import Prism from "prismjs";
 import "./prism-vsc-dark-plus.css";
+import CircularProgress from '@mui/material/CircularProgress';
 import qs from "qs";
 dotenv.config();
 
@@ -19,17 +21,18 @@ export default function Home() {
   const [sourceCode, setSourceCode] = useState(``);
   const [stdin, setStdin] = useState(``);
   const [output, setOutput] = useState(``);
-
+  const [loading, setLoading] = useState(false);
+  const [clicked, setClicked] = useState(false);
   const apiUrl=process.env.NEXT_PUBLIC_SERVER;
-  
-  // const apiUrl="http://localhost:8000";
+  // const sanitizer = DOMPurify.sanitize();
+
 
 
 
   const handleSubmit=(e:any)=>{
     e.preventDefault();
-    console.log(sourceCode);
-    
+    setLoading(true);
+    setClicked(true);
     const data={
       lang:codeLanguage,
       stdin:stdin,
@@ -42,22 +45,25 @@ export default function Home() {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       data: qs.stringify(data),
-      // url: "http://localhost:8000/submit"
       url: apiUrl+"/submit"
     };
     axios(config)
     .then((result)=>{
       console.log(result);
-      setOutput(result.data);
+      let x=result.data;
+      setOutput(x.toString());
+      setLoading(false);
     })
     .catch((err)=>{
       console.log(err);
     });
-    
-
   }
 
-  
+  const useBr=(text:string)=>{
+    console.log(typeof(text));
+    return text.replace(/\n/g, "<br>");
+  }
+  // return text.split("\n").join("<br />");
 
   return (
     <div className='flex flex-col items-center max-w-screen bg-gradient-to-bl from-slate-500 via-white to-slate-300 overflow-y-auto border border-green-400  font-semibold'>
@@ -82,12 +88,19 @@ export default function Home() {
             <InputArea/>
           </StdinContext.Provider>
         </div>
-        <div className="flex flex-col ">
-          <p className="">Result:</p>
-          <div className="">
-            {output}
-          </div>
+
+        <div className={`flex w-[40%] h-72 flex-col ${clicked? '':'hidden'}`} >
+          <p className="my-4">Result:</p>
+        {loading?(
+          // <div>Loading</div>
+          <CircularProgress size={"2rem"}/>
+        ):(
+
+            <div className="w-full h-full text-white bg-slate-700" dangerouslySetInnerHTML={{__html: useBr(output)}} />
+            )
+          } 
         </div>
+
       </form>
     </div>
   );

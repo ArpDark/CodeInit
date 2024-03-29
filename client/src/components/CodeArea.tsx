@@ -8,8 +8,6 @@ export default function CodeArea(){
     const linenumRef = useRef<HTMLDivElement>(null);
     const {sourceCode, setSourceCode} = useContext(SourceCodeContext);
     const [lineNumber, setLineNumber]=useState([1]);
-    const [lineCounter, setLineCounter]=useState(1);
-
     useEffect(() => {
         const handleScroll = () => {
           if( textareaRef.current!=null && linenumRef.current)
@@ -19,53 +17,40 @@ export default function CodeArea(){
           if( linenumRef.current!=null && textareaRef.current)
             textareaRef.current.scrollTop = linenumRef.current.scrollTop;
         };
-    
-        // textareaRef.current?.addEventListener('scroll', handleScroll);
         textareaRef.current?.addEventListener('scroll', handleScroll);
         linenumRef.current?.addEventListener('scroll', handleScroll2);
-        // return () => {
-        //     textareaRef.current?.removeEventListener('scroll', handleScroll);
-        // };
       }, []);
 
-    const handleChange=(e:any)=>{
-        setSourceCode(e.target.value);
-        const str=e.target.value;
-        let index = str.indexOf("\n");
-        let c=0;
-        while (index !== -1) {
-          c++;
-          index = str.indexOf("\n", index + 1);
-        }
-        console.log(c);
-        
-        let arr: any[0]=[1];
-        let a;
-        for(a=1;a<=c;a++)
-        {
-          arr[a]=a+1;
-        }
-        setLineNumber(arr);
-        setLineCounter(c);
-      }
+    function handleChange(e: any) {
+    setSourceCode(e.target.value);
+    const str = e.target.value;
+    let index = str.indexOf("\n");
+    let c = 0;
+    while (index !== -1) {
+      c++;
+      index = str.indexOf("\n", index + 1);
+    }
+
+    let arr: any[0] = [1];
+    let a;
+    for (a = 1; a <= c; a++) {
+      arr[a] = a + 1;
+    }
+    setLineNumber(arr);
+  }
 
       const newLine=(e:any)=>{
         if(e.code=="Tab")
         {
           e.preventDefault();
           const { selectionStart, selectionEnd } = e.target;
-          console.log(e.target.value);
-          console.log(selectionEnd);
-          
           const newCode = sourceCode.substring(0, selectionStart) + '    ' + sourceCode.substring(selectionEnd);
-
           setSourceCode(newCode);
-          
-          // Set the cursor position after inserting spaces
-          // textareaRef.current.selectionStart = selectionStart;
-          // textareaRef.current.selectionEnd = selectionStart;
-          // textareaRef.current.focus();
-
+          if(textareaRef.current)
+          {
+            textareaRef.current.value=newCode;
+            textareaRef.current.selectionStart = textareaRef.current.selectionEnd =selectionStart + 4;
+          }
         }
       }
 
@@ -80,14 +65,8 @@ export default function CodeArea(){
                   <p key={"a"+line} >{line} </p>
                 ))}
               </div>
-              {/* <pre className="line-numbers"> */}
-                {/* <code className=" language-js">
-                {`print('Hello World');`}
-                </code> */}
-              {/* </pre> */}
-              <textarea ref={textareaRef}  name='code' onKeyDown={newLine} className='  resize-none  max-h-max outline-none w-full h-full rounded-sm text-white border-2 border-yellow-300  bg-transparent ' value={sourceCode} onChange={handleChange} />
-                
-            </div>
+              <textarea ref={textareaRef} onKeyDown={newLine}   name='code' className='  resize-none  max-h-max outline-none w-full h-full rounded-sm text-white border-2 border-yellow-300  bg-transparent ' value={sourceCode} onChange={handleChange} />
           </div>
+        </div>
     );
 }

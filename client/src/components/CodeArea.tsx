@@ -59,7 +59,7 @@ export default function CodeArea(){
       }
 
     return (
-        <div className='flex flex-col rounded-sm w-7/12 my-4 bg-slate-700 shadow-md shadow-gray-400'>
+        <div className='flex flex-col rounded-sm w-11/12 lg:w-8/12 my-4 bg-slate-700 shadow-md shadow-gray-400'>
             <label className="flex items-center justify-between w-16 mx-5 mt-2 text-white" htmlFor='code'><FaCode/>Code</label>
             <div className="flex ml-2 mr-5 mb-5 mt-2 h-96 border-2 border-slate-600 rounded-sm ">
 

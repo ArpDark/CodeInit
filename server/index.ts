@@ -22,9 +22,9 @@ app.get('/', (req:Request, res:Response) => {
 });
 
 app.post("/submit",async(req:Request,res:Response)=>{
-  console.log(req.body.lang);
-  console.log(req.body.stdin);
-  console.log(req.body.code);
+  // console.log(req.body.lang);
+  // console.log(req.body.stdin);
+  // console.log(req.body.code);
   const buffer = Buffer.from(req.body.code);
   const code = buffer.toString('base64');
 
@@ -65,13 +65,15 @@ app.post("/submit",async(req:Request,res:Response)=>{
     
   try {
       const response = await axios.request(options);
-      console.log(response.data);
+      // console.log(response.data);
       const buffer= Buffer.from(response.data.stdout, 'base64');
-      console.log(buffer.toString());
+      // console.log(buffer.toString());
       const output=buffer.toString();
       res.send(output);
   } catch (error) {
-      console.error(error);
+      // console.error(error);
+      // console.log(error);
+      res.status(404).send(error);
   }
   
   

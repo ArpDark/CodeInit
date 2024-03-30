@@ -24,7 +24,7 @@ export default function Dropdown(){
                         <p className="w-24">{codeLanguage}</p>
                         <KeyboardArrowDownIcon/>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className=" shadow-md shadow-gray-800 border-1 border-slate-700 rounded-none w-40 h-fit bg-slate-700/90 text-white ">
+                    <DropdownMenuContent className=" shadow-md shadow-gray-800 border-1 border-slate-700 rounded-none w-32 h-fit bg-slate-700/90 text-white ">
                         <DropdownMenuItem onClick={()=>{setCodeLanguage("C")}} textValue="C"  className=" text-lg cursor-pointer focus:bg-slate-800  font-medium" >C</DropdownMenuItem>
                         <DropdownMenuItem onClick={()=>{setCodeLanguage("C++")}} textValue="C++"  className=" text-lg cursor-pointer focus:bg-slate-800  font-medium" >C++</DropdownMenuItem>
                         <DropdownMenuItem onClick={()=>{setCodeLanguage("Java")}} textValue="Java"  className=" text-lg cursor-pointer focus:bg-slate-800 font-medium" >Java</DropdownMenuItem>

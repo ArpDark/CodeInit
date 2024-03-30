@@ -31,12 +31,14 @@ app.post("/submit",async(req:Request,res:Response)=>{
   const buffer2 = Buffer.from(req.body.stdin);
   const stdin = buffer2.toString('base64');
   let langId=54;
+  if(req.body.lang=="C") langId=50;
   if(req.body.lang=="C++") langId=54;
   if(req.body.lang=="Java") langId=62;
   if(req.body.lang=="JavaScript") langId=63;
   if(req.body.lang=="Python") langId=71;
 
   const options = {
+      // c id: 50
       // c++ id:54
       //  java id: 62
       //  JS id: 63

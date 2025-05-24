@@ -65,12 +65,12 @@ export default function InputArea(){
             <label className="text-white mx-5 mt-2" htmlFor='input'>Input</label>
             
             <div className="flex ml-2 mr-5 mb-5 mt-2 h-64 lg:h-72 border-2 border-slate-600 rounded-sm ">
-                <div ref={linenumRef} className=" o-scrollbar bg-slate-800 px-1.5 py-2 text-gray-300/90 overflow-y-auto ">
+                <div ref={linenumRef} className=" no-scrollbar bg-slate-800 px-1.5 py-2 text-gray-300/90 overflow-y-auto ">
                     {lineNumber.map((line) => (
                         <p key={"a"+line} >{line} </p>
                         ))}
                 </div>
-                <textarea ref={textareaRef} value={stdin} className='resize-none  max-h-max outline-none w-full h-full pl-1 py-2 rounded-sm text-white whitespace-nowrap text bg-transparent ' wrap="off" name='input' onChange={handleChange} />
+                <textarea ref={textareaRef} value={stdin} className='resize-none  outline-none w-full h-full pl-1 py-2 rounded-sm text-white whitespace-nowrap text bg-transparent ' wrap="off" name='input' onChange={handleChange} />
             </div>
         </div>
 
